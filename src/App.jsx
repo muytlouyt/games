@@ -299,7 +299,7 @@ export default function Sudoku() {
         {screen === 'choose' && (
           <div className="bg-white p-6 rounded shadow">
             <h2 className="text-4xl text-center font-semibold mb-6">Select difficulty</h2>
-            <div className="flex justify-center gap-3 mb-6">
+            <div className="flex flex-col md:flex-row flex-wrap content-center justify-center gap-3 mb-6">
               {['Easy','Medium','Hard','Extreme'].map(d => (
                 <button key={d} className={`px-4 py-2 rounded cursor-pointer ${difficulty===d? 'bg-green-600 text-white' : 'bg-gray-200'}`} onClick={() => setDifficulty(d)}>{d}</button>
               ))}
