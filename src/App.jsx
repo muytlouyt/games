@@ -364,10 +364,10 @@ export default function Sudoku() {
 			  
             </div>
             <div className="flex justify-center gap-2 mt-3">
-				<div className="bg-gray-50 p-3 rounded mb-3">
+				<div className="bg-gray-50 p-3 rounded">
 				  <div className="grid grid-cols-9 gap-2" style={{width: 'min(480px, 80vw)', aspectRatio: '10/1' }}>
 				    {range(9).map(i => (
-					  <button key={i} className="relative w-full h-full flex items-center justify-center cursor-pointer select-none bg-gray-200 hover:bg-gray-300  rounded" onClick={() => inputNumber(i+1)}>{i+1}</button>
+					  <button key={i} className="relative w-full h-full flex items-center justify-center cursor-pointer select-none bg-gray-200 hover:bg-gray-300 rounded" onClick={() => inputNumber(i+1)}>{i+1}</button>
 					))}
 				  </div>
 				</div>
