@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react'
 
 /*
 Sudoku (single-file React app)
@@ -57,6 +58,18 @@ function solve(board) {
   return true;
 }
 
+// Is victory achieved
+function isVictory(board) {
+  for (let r = 0; r < 9; r++) {
+    for (let c = 0; c < 9; c++) {
+      if (board[r][c] === 0) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
 // Generate a full valid board
 function generateFullBoard() {
   const board = Array.from({ length: 9 }, () => Array(9).fill(0));
@@ -108,6 +121,9 @@ function makePuzzle(full, difficulty) {
 // --- React component ---
 
 export default function Sudoku() {
+  
+  const [victoryDialogOpen, setVictoryDialogOpen] = useState(false)
+	 
   // UI states
   const [screen, setScreen] = useState("menu"); // menu | game
   const [difficulty, setDifficulty] = useState("Medium");
@@ -119,6 +135,12 @@ export default function Sudoku() {
   const [selected, setSelected] = useState([0,0]);
   const [pencilMode, setPencilMode] = useState(false);
   const [undoStack, setUndoStack] = useState([]);
+  
+  useEffect(() => {
+    if (isVictory(board)) {
+	  setVictoryDialogOpen(true);
+	}
+  }, [board]);
 
   // Helpers
   function pushUndo(action) {
@@ -226,6 +248,7 @@ export default function Sudoku() {
     setUndoStack([]);
     setDifficulty(selectedDifficulty);
     setScreen('game');
+	setPencilMode(false);
   }
 
   // Cell click handler
@@ -265,26 +288,25 @@ export default function Sudoku() {
       <div className="max-w-4xl w-full">
         {screen === 'menu' && (
           <div className="bg-white p-6 rounded shadow">
-            <h1 className="text-2xl font-bold mb-4">Sudoku</h1>
-            <div className="flex gap-3 mb-4">
-              <button className="px-4 py-2 bg-blue-600 text-white rounded" onClick={() => { setScreen('choose'); }}>Start</button>
-              <button className="px-4 py-2 bg-red-500 text-white rounded" onClick={() => window.close?.() || alert('Exit — close the tab') }>Exit</button>
+            <h1 className="text-4xl text-center font-bold mb-6">Sudoku</h1>
+            <div className="flex justify-center gap-3 mb-6">
+              <button className="px-4 py-2 cursor-pointer bg-blue-600 hover:bg-blue-400 text-white rounded" onClick={() => { setScreen('choose'); }}>Start</button>
+              <button className="px-4 py-2 cursor-pointer bg-red-500 hover:bg-red-300 text-white rounded" onClick={() => window.close?.() || alert('Exit — close the tab') }>Exit</button>
             </div>
-            <p className="text-sm text-gray-600">Local Sudoku game. No networking included.</p>
           </div>
         )}
 
         {screen === 'choose' && (
           <div className="bg-white p-6 rounded shadow">
-            <h2 className="text-xl font-semibold mb-3">Select difficulty</h2>
-            <div className="flex gap-3 mb-4">
+            <h2 className="text-4xl text-center font-semibold mb-6">Select difficulty</h2>
+            <div className="flex justify-center gap-3 mb-6">
               {['Easy','Medium','Hard','Extreme'].map(d => (
-                <button key={d} className={`px-4 py-2 rounded ${difficulty===d? 'bg-green-600 text-white' : 'bg-gray-200'}`} onClick={() => setDifficulty(d)}>{d}</button>
+                <button key={d} className={`px-4 py-2 rounded cursor-pointer ${difficulty===d? 'bg-green-600 text-white' : 'bg-gray-200'}`} onClick={() => setDifficulty(d)}>{d}</button>
               ))}
             </div>
-            <div className="flex gap-3">
-              <button className="px-4 py-2 bg-blue-600 text-white rounded" onClick={() => startGame(difficulty)}>Play</button>
-              <button className="px-4 py-2 bg-gray-300 rounded" onClick={() => setScreen('menu')}>Back</button>
+            <div className="flex justify-center gap-3">
+              <button className="px-4 py-2 cursor-pointer bg-blue-600 hover:bg-blue-400 text-white rounded" onClick={() => startGame(difficulty)}>Play</button>
+              <button className="px-4 py-2 cursor-pointer bg-gray-200 hover:bg-gray-300 rounded" onClick={() => setScreen('menu')}>Back</button>
             </div>
           </div>
         )}
@@ -292,7 +314,7 @@ export default function Sudoku() {
         {screen === 'game' && (
           <div className="bg-white p-4 rounded shadow gap-4">
             <div className="flex justify-center">
-              <div className="grid grid-cols-9 gap-0 border-2 border-black" style={{width: 'min(540px, 90vw)', height: 'min(540px, 90vh)' }}>
+              <div className="grid grid-cols-9 auto-rows-fr gap-0 border-2 border-black" style={{width: 'min(540px, 90vw)', aspectRatio: '1/1' }}>
                 {range(9).map(r => range(9).map(c => {
 				  const isGiven = given[r][c] !== 0;
 				  const selVal = board[selected[0]][selected[1]] !== 0 ? board[selected[0]][selected[1]] : null;
@@ -300,10 +322,10 @@ export default function Sudoku() {
 				  const sameCol = c === selected[1];
 				  const sameSquare = (~~(r / 3) == ~~(selected[0] / 3)) && (~~(c / 3) === ~~(selected[1] / 3));
 				  const isSelected = sameRow && sameCol;
-				  const sameVal = selVal && board[r][c] === selVal;
-				  const highlight = selVal && (sameRow || sameCol || sameSquare);
 				  const val = board[r][c];
 				  const notes = pencil[r][c] || [];
+				  const sameVal = selVal && (val === selVal || notes.includes(selVal));
+				  const highlight = selVal && (sameRow || sameCol || sameSquare);
 
 				  // choose bg class once — порядок важен: selected > highlight > given > default
 				  let bgClass = 'bg-white';
@@ -326,12 +348,12 @@ export default function Sudoku() {
 							<div className="text-xl text-sky-700 font-bold">{val}</div>
 						  ) : (
 							notes.length > 0 ? (
-							  <div className="absolute top-1 left-1 text-xs grid grid-cols-3 w-full h-full p-1">
+							  <div className="absolute text-xs grid grid-cols-3 auto-rows-fr w-full h-full p-1">
 							    {range(9).map(i => (
-								  <div key={i} className="text-center leading-3">{notes.includes(i+1) ? i+1 : ''}</div>
+								  <div key={i} className="relative w-full h-full flex items-center justify-center leading-3">{notes.includes(i+1) ? i+1 : ' '}</div>
 								))}
 							  </div>
-							) : null
+							) : ''
 						  )}
 						</>
 					  )}
@@ -343,22 +365,46 @@ export default function Sudoku() {
             </div>
             <div className="flex justify-center gap-2 mt-3">
 				<div className="bg-gray-50 p-3 rounded mb-3">
-				  <div className="grid grid-cols-9 gap-2" style={{width: 'min(480px, 80vw)', height: 'min(48px, 8vh)' }}>
+				  <div className="grid grid-cols-9 gap-2" style={{width: 'min(480px, 80vw)', aspectRatio: '10/1' }}>
 				    {range(9).map(i => (
-					  <button key={i} className="relative w-full h-full flex items-center justify-center cursor-pointer select-none bg-gray-100 hover:bg-gray-200 rounded" onClick={() => inputNumber(i+1)}>{i+1}</button>
+					  <button key={i} className="relative w-full h-full flex items-center justify-center cursor-pointer select-none bg-gray-200 hover:bg-gray-300  rounded" onClick={() => inputNumber(i+1)}>{i+1}</button>
 					))}
 				  </div>
 				</div>
 		      </div>
               <div className="flex justify-center gap-2 mt-3">
-                <button className="cursor-pointer px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded" onClick={() => { setPencilMode(m=>!m); }}>{pencilMode ? 'Pencil: ON' : 'Pencil: OFF'}</button>
-                <button className="cursor-pointer px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded" onClick={() => undo()}>Undo</button>
-                <button className="cursor-pointer px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded" onClick={() => onErase()}>Erase</button>
-                <button className="cursor-pointer px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded" onClick={() => { setScreen('menu'); }}>Exit to Menu</button>
+                <button className="cursor-pointer px-3 py-2 bg-gray-200 hover:bg-gray-300 rounded" onClick={() => { setPencilMode(m=>!m); }}>{pencilMode ? 'Pencil: ON' : 'Pencil: OFF'}</button>
+                <button className="cursor-pointer px-3 py-2 bg-gray-200 hover:bg-gray-300 rounded" onClick={() => undo()}>Undo</button>
+                <button className="cursor-pointer px-3 py-2 bg-gray-200 hover:bg-gray-300 rounded" onClick={() => onErase()}>Erase</button>
+                <button className="cursor-pointer px-3 py-2 bg-gray-200 hover:bg-gray-300 rounded" onClick={() => { setScreen('menu'); }}>Exit to Menu</button>
               </div>
           </div>
         )}
       </div>
+	  <Dialog open={victoryDialogOpen} onClose={setVictoryDialogOpen} className="relative z-10">
+		  <DialogBackdrop
+			transition
+			className="fixed inset-0 bg-gray-500/75 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in dark:bg-gray-900/50"
+		  />
+
+		  <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
+			<div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+			  <DialogPanel
+				transition
+				className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:w-full sm:max-w-lg data-closed:sm:translate-y-0 data-closed:sm:scale-95 dark:bg-gray-800 dark:outline dark:-outline-offset-1 dark:outline-white/10"
+			  >
+			    <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4 dark:bg-gray-800">
+					<h1 className="text-6xl text-center font-bold mb-10">Victory!</h1>
+					<div className="flex justify-center gap-2 mt-3">
+					  <button className="cursor-pointer px-3 py-2 bg-gray-200 hover:bg-gray-300  rounded" onClick={() => { startGame(difficulty); setVictoryDialogOpen(false); }}>Play Again</button>
+					  <button className="cursor-pointer px-3 py-2 bg-gray-200 hover:bg-gray-300 rounded" onClick={() => { setScreen('menu'); setVictoryDialogOpen(false); }}>Exit to Menu</button>
+					</div>
+				</div>
+			  </DialogPanel>
+			</div>
+		  </div>
+	  </Dialog>
     </div>
+
   );
 }
