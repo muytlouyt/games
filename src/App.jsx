@@ -314,7 +314,7 @@ export default function Sudoku() {
         {screen === 'game' && (
           <div className="bg-white p-4 rounded shadow gap-4">
             <div className="flex justify-center">
-              <div className="grid grid-cols-9 auto-rows-fr gap-0 border-2 border-black" style={{width: 'min(540px, 90vw)', aspectRatio: '1/1' }}>
+              <div className="grid grid-cols-9 auto-rows-fr gap-0 border-2 border-black" style={{width: 'min(540px, 100%)', aspectRatio: '1/1' }}>
                 {range(9).map(r => range(9).map(c => {
 				  const isGiven = given[r][c] !== 0;
 				  const selVal = board[selected[0]][selected[1]] !== 0 ? board[selected[0]][selected[1]] : null;
@@ -341,16 +341,16 @@ export default function Sudoku() {
 					  className={`relative w-full h-full flex items-center justify-center cursor-pointer select-none ${bgClass} border ${((c+1)%3===0 && c!==8) ? 'border-r-2' : ''} ${((r+1)%3===0 && r!==8) ? 'border-b-2' : ''}`}
 					>
 					  {isGiven ? (
-						<div className="text-xl font-bold">{given[r][c]}</div>
+						<div className="text-2xl md:text-3xl font-bold">{given[r][c]}</div>
 					  ) : (
 						<>
 						  {val !== 0 ? (
-							<div className="text-xl text-sky-700 font-bold">{val}</div>
+							<div className="text-2xl md:text-3xl text-sky-700 font-bold">{val}</div>
 						  ) : (
 							notes.length > 0 ? (
-							  <div className="absolute text-xs grid grid-cols-3 auto-rows-fr w-full h-full p-1">
+							  <div className="absolute text-tiny md:text-xs grid grid-cols-3 auto-rows-fr w-full h-full p-1">
 							    {range(9).map(i => (
-								  <div key={i} className="relative w-full h-full flex items-center justify-center leading-3">{notes.includes(i+1) ? i+1 : ' '}</div>
+								  <div key={i} className="relative w-full h-full flex items-center justify-center leading-3 p-1">{notes.includes(i+1) ? i+1 : ' '}</div>
 								))}
 							  </div>
 							) : ''
@@ -367,7 +367,7 @@ export default function Sudoku() {
 				<div className="bg-gray-50 p-3 rounded">
 				  <div className="grid grid-cols-9 gap-2" style={{width: 'min(480px, 80vw)', aspectRatio: '10/1' }}>
 				    {range(9).map(i => (
-					  <button key={i} className="relative w-full h-full flex items-center justify-center cursor-pointer select-none bg-gray-200 hover:bg-gray-300 rounded" onClick={() => inputNumber(i+1)}>{i+1}</button>
+					  <button key={i} className="relative w-full h-full flex items-center justify-center cursor-pointer text-xl md:text-2xl select-none bg-gray-200 hover:bg-gray-300 rounded" onClick={() => inputNumber(i+1)}>{i+1}</button>
 					))}
 				  </div>
 				</div>
@@ -396,7 +396,7 @@ export default function Sudoku() {
 			    <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4 dark:bg-gray-800">
 					<h1 className="text-6xl text-center font-bold mb-10">Victory!</h1>
 					<div className="flex justify-center gap-2 mt-3">
-					  <button className="cursor-pointer px-3 py-2 bg-gray-200 hover:bg-gray-300  rounded" onClick={() => { startGame(difficulty); setVictoryDialogOpen(false); }}>Play Again</button>
+					  <button className="cursor-pointer px-3 py-2 bg-gray-200 hover:bg-gray-300 rounded" onClick={() => { startGame(difficulty); setVictoryDialogOpen(false); }}>Play Again</button>
 					  <button className="cursor-pointer px-3 py-2 bg-gray-200 hover:bg-gray-300 rounded" onClick={() => { setScreen('menu'); setVictoryDialogOpen(false); }}>Exit to Menu</button>
 					</div>
 				</div>
