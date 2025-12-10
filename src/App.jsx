@@ -161,9 +161,28 @@ export default function Sudoku() {
           nb[r][c] = val;
           return nb;
         });
+		
+		action.pencil = deepClone(pencil);
         // pencil cleared when writing pen
         setPencil(p => {
           const np = deepClone(p);
+		  for (let i = ~~(r / 3) * 3; i < (~~(r / 3) + 1) * 3; i++) {
+		    for (let j = ~~(c / 3) * 3; j < (~~(c / 3) + 1) * 3; j++) {
+			  const arr = new Set(np[i][j]);
+			  if (arr.has(val)) { arr.delete(val); }
+			  np[i][j] = Array.from(arr).sort((a,b)=>a-b);
+			}
+		  }
+		  for (let i = 0; i < 9; i++) {
+		    const arr = new Set(np[r][i]);
+			if (arr.has(val)) { arr.delete(val); }
+			np[r][i] = Array.from(arr).sort((a,b)=>a-b);
+		  }
+		  for (let i = 0; i < 9; i++) {
+		    const arr = new Set(np[i][c]);
+			if (arr.has(val)) { arr.delete(val); }
+			np[i][c] = Array.from(arr).sort((a,b)=>a-b);
+		  }
           np[r][c] = [];
           return np;
         });
@@ -205,7 +224,7 @@ export default function Sudoku() {
         if (a.mode === 'pen') {
           if (a.prev !== undefined) {
             setBoard(b => { const nb = deepClone(b); nb[a.r][a.c] = a.prev; return nb; });
-            setPencil(p => { const np = deepClone(p); np[a.r][a.c] = a.prevPencil || []; return np; });
+            setPencil(a.pencil);
           }
         } else {
           if (a.prevPencil !== undefined) {
@@ -331,7 +350,6 @@ export default function Sudoku() {
 				  let bgClass = 'bg-white';
 				  if (isSelected || sameVal) bgClass = 'bg-blue-100';
 				  else if (highlight) bgClass = 'bg-gray-200';
-				  else if (isGiven) bgClass = 'bg-gray-100';
 				  
 				  // now use only ONE bg-* class in the className:
 				  return (
@@ -388,7 +406,7 @@ export default function Sudoku() {
 		  />
 
 		  <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
-			<div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+			<div className="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
 			  <DialogPanel
 				transition
 				className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:w-full sm:max-w-lg data-closed:sm:translate-y-0 data-closed:sm:scale-95 dark:bg-gray-800 dark:outline dark:-outline-offset-1 dark:outline-white/10"
