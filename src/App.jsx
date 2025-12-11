@@ -517,7 +517,8 @@ export default function Sudoku() {
     const allPlayers = [{ id: peerRef.current.id, name: localPlayerRef.current.name, peerId: peerRef.current.id }, ...(players.filter(p=>p.peerId!==peerRef.current.id))];
     if (allPlayers.length < 2) { pushLog('Need at least 2 players to start'); return; }
     // prepare tiles and deal
-    const tiles = makeDoubleSixSet(); shuffleArray(tiles);
+    const tiles = makeDoubleSixSet(); 
+	shuffleArray(tiles);
     const hands = {};
     const playerIds = allPlayers.map(p=>p.peerId);
     const handSize = playerIds.length === 2 ? 7 : 5; // common rule: 7 tiles for 2 players, else 5
