@@ -409,10 +409,10 @@ export default function Sudoku() {
 			<div className="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
 			  <DialogPanel
 				transition
-				className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:w-full sm:max-w-lg data-closed:sm:translate-y-0 data-closed:sm:scale-95 dark:bg-gray-800 dark:outline dark:-outline-offset-1 dark:outline-white/10"
+				className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:w-full max-w-lg sm:max-w-2xs data-closed:sm:translate-y-0 data-closed:sm:scale-95 dark:bg-gray-800 dark:outline dark:-outline-offset-1 dark:outline-white/10"
 			  >
 			    <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4 dark:bg-gray-800">
-					<h1 className="text-6xl text-center font-bold mb-10">Victory!</h1>
+					<h1 className="text-4xl lg:text-5xl text-center font-bold mb-10">Victory!</h1>
 					<div className="flex justify-center gap-2 mt-3">
 					  <button className="cursor-pointer px-3 py-2 bg-gray-200 hover:bg-gray-300 rounded" onClick={() => { startGame(difficulty); setVictoryDialogOpen(false); }}>Play Again</button>
 					  <button className="cursor-pointer px-3 py-2 bg-gray-200 hover:bg-gray-300 rounded" onClick={() => { setScreen('menu'); setVictoryDialogOpen(false); }}>Exit to Menu</button>
