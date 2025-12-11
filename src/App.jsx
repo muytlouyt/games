@@ -156,6 +156,16 @@ function makePuzzle(full, difficulty) {
   return puzzle;
 }
 
+// --- Domino utilities ---
+function makeDoubleSixSet() {
+  const tiles = [];
+  for (let a = 0; a <= 6; a++) for (let b = a; b <= 6; b++) tiles.push([a,b]);
+  return tiles;
+}
+
+function shuffleArray(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } }
+function tileToStr(t){ return `${t[0]}-${t[1]}`; }
+
 // --- React component ---
 
 export default function Sudoku() {
