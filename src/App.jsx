@@ -39,6 +39,38 @@ function isValidPlacement(board, r, c, val) {
   return true;
 }
 
+// Count number of solutions using backtracking (limit to avoid long search)
+function countSolutions(board, limit = 2) {
+  let solutions = 0;
+
+  function dfs(b) {
+    if (solutions >= limit) return; // stop early
+
+    for (let r = 0; r < 9; r++) {
+      for (let c = 0; c < 9; c++) {
+        if (b[r][c] === 0) {
+          for (let v = 1; v <= 9; v++) {
+            if (isValidPlacement(b, r, c, v)) {
+              b[r][c] = v;
+              dfs(b);
+              b[r][c] = 0;
+            }
+            if (solutions >= limit) return;
+          }
+          return;
+        }
+      }
+    }
+
+    // no empty cells → one full solution found
+    solutions++;
+  }
+
+  const copy = deepClone(board);
+  dfs(copy);
+  return solutions;
+}
+
 // Solve using backtracking (used for generator)
 function solve(board) {
   for (let r = 0; r < 9; r++) {
@@ -90,31 +122,50 @@ function generateFullBoard() {
   return board;
 }
 
-// Remove cells based on difficulty
+// Generate puzzle with guaranteed unique solution
 function makePuzzle(full, difficulty) {
   const puzzle = deepClone(full);
+
   let removals;
   switch (difficulty) {
-    case "Easy": removals = 35; break; // more clues
+    case "Easy": removals = 35; break;
     case "Medium": removals = 45; break;
     case "Hard": removals = 52; break;
     case "Extreme": removals = 58; break;
     default: removals = 45;
   }
+
   const positions = [];
   for (let i = 0; i < 81; i++) positions.push(i);
-  // shuffle
+
+  // random order of cell removal
   for (let i = positions.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1)); [positions[i], positions[j]] = [positions[j], positions[i]];
+    const j = Math.floor(Math.random() * (i + 1));
+    [positions[i], positions[j]] = [positions[j], positions[i]];
   }
+
   let removed = 0;
+
   for (let idx = 0; idx < positions.length && removed < removals; idx++) {
     const pos = positions[idx];
     const r = Math.floor(pos / 9), c = pos % 9;
-    // temporary remove
+
+    if (puzzle[r][c] === 0) continue;
+
+    const backup = puzzle[r][c];
     puzzle[r][c] = 0;
-    removed++;
+
+    // Check uniqueness: must have exactly 1 solution
+    const solutions = countSolutions(puzzle, 2);
+
+    if (solutions !== 1) {
+      // revert removal
+      puzzle[r][c] = backup;
+    } else {
+      removed++;
+    }
   }
+
   return puzzle;
 }
 
