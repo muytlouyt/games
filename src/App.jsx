@@ -738,13 +738,6 @@ export default function Sudoku() {
                 <button className="px-4 py-2 cursor-pointer bg-red-500 hover:bg-red-300 text-white rounded" onClick={() => window.close?.() || alert('Exit — close the tab') }>Exit</button>
               </div>
             </div>
-		    <div className="bg-white p-6 rounded shadow">
-              <h1 className="text-4xl text-center font-bold mb-6">Domino</h1>
-              <div className="flex justify-center gap-3 mb-6">
-                <button className="px-4 py-2 cursor-pointer bg-blue-600 hover:bg-blue-400 text-white rounded" onClick={() => { setScreen('domino'); }}>Start</button>
-                <button className="px-4 py-2 cursor-pointer bg-red-500 hover:bg-red-300 text-white rounded" onClick={() => window.close?.() || alert('Exit — close the tab') }>Exit</button>
-              </div>
-            </div>
 		  </React.Fragment>
         )}
 
